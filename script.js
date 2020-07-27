@@ -1,20 +1,44 @@
 var currentQuestion=0;
 var currentScore=0;
 var currentTime=45;
-var questionContainer=document.getElementById("container");
-var interval;
+var counterTime;
+var startContainer=document.getElementById("container");
+var quizContainer=document.getElementById("quiz");
+var questionContainer=document.getElementById("questions");
+var resultsContainer=document.getElementById("results");
+var scoreContainer=document.getElementById("score");
 
+function startQuiz() {
+    startContainer.setAttribute("class","hide")
+    quizContainer.removeAttribute("class")
+    counterTime = setInterval(function(){
+   currentTime = currentTime - 1;
+   scoreContainer.innerHTML= currentTime + "s";
+   if (currentTime < 0) {
+       clearInterval(counterTime);
+       scoreContainer.innerHTML = "EXPIRED";
+     }
+     
+   
+}, 1000);
+ showCurrentQuestion();
 
-questionContainer.addEventListener("click",function(event) {
-    if(event.target.matches("li")) {
+// Set the interval to run every  second
+// - Update the time counter
+// - Check if the time ran out
+// - If the time ran out finishQuiz()
+}
+function checkAnswer(event) {
+   
         var answer=event.target.innerText;
 
         var question=questions[currentQuestion];
 
         if(answer===question.answer) {
-            currentScore++;
+            alert("Correct!")
         } else {
             currentTime=currentTime-5;
+            alert("Wrong!")
         }
         currentQuestion++;
         if(currentQuestion>=questions.length) {
@@ -23,8 +47,8 @@ questionContainer.addEventListener("click",function(event) {
             showCurrentQuestion();
         }       
         
-    }
-});
+    
+};
 
 function showHighScores() {
     //Retrieve high scores
@@ -72,31 +96,14 @@ function showCurrentQuestion() {
 
     for(var i=0;i<question.options.length;i++) {
         var questionLi=document.createElement("li");
-        questionLi.innerText=question.options[i];
+        var button=document.createElement("button");
+        button.addEventListener("click",checkAnswer)
+        button.innerText=question.options[i];
+        questionLi.appendChild(button);
         optionsList.appendChild(questionLi);
 
     }
     questionContainer.appendChild(optionsList);
+    
 }
 
-function startQuiz() {
-
-    var counterTime = setInterval(function(){
-        var countDown =60;
-        var distance = countDown - 1;
-        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        document.getElementById("container").innerHTML= seconds + "s";
-        if (distance < 0) {
-            clearInterval(counterTime);
-            document.getElementById("container").innerHTML = "EXPIRED";
-          }
-        
-
-    }, 1000);
-
-    console.log(counterTime())
-    // Set the interval to run every  second
-    // - Update the time counter
-    // - Check if the time ran out
-    // - If the time ran out finishQuiz()
-}
